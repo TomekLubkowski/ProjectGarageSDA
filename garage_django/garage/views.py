@@ -6,49 +6,63 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from .models import Repairs, Car, Client
-from .forms import RepairForm, carForm
+from .forms import RepairForm, carForm, UserTypeLoginForm, UserTypeRegistrationForm
 # import requests
+
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from .forms import UserTypeLoginForm
 
 def loginPage(request):
     if request.method == 'POST':
-        username = request.POST.get('username').lower()
-        password = request.POST.get('password')
+        form = UserTypeLoginForm(request, data=request.POST)
+        if form.is_valid():
+            user_type = form.cleaned_data.get('user_type')
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
 
-        try:
-            user = User.objects.get(username=username)
-        except:
-           messages.error(request, 'User does not exist')
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                messages.error(request, 'User does not exist')
+                return redirect('login')  # przekierowanie na strone logowania
 
-        user = authenticate(request, username=username, password=password)
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                if user_type == 'customer':
+                    return redirect('clientlogin')  # przekierowanie na stronę klienta
+                elif user_type == 'mechanic':
+                    return redirect('mechaniclogin')  # przekierowanie an strone mechanika
+            else:
+                messages.error(request, 'Incorrect username or password')
+                return redirect('login')  # Przekierowanie z powrotem do strony logowania z komunikatem o błędzie
+    else:
+        form = UserTypeLoginForm(request)
 
-        if user is not None:
-            login(request, user)
-            return redirect('home')
-        else:
-            messages.error(request, 'User OR password does not exist')         
-    
-    context = {'page': page}
+    context = {'form': form}
     return render(request, 'garage/login_register.html', context)
+
 
 def logoutUser(request):
     logout(request)
     return redirect('index')
 
 def registerPage(request):
-    form = UserCreationForm()
-
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = UserTypeRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.username = user.username.lower()
-            user.save()
-            login(request, user)
-            return redirect('home')
-        else:
-            messages.error(request, 'An error occurred during registration')
+            user_type = form.cleaned_data.get('user_type')
+            user = form.save()
+            if user_type == 'mechanic':
+                specialization = request.POST.get('specialization')
+                Mechanic.objects.create(user=user, specialization=specialization)
+            return redirect('login')  # Przekierowanie do strony logowania po udanej rejestracji
+    else:
+        form = UserTypeRegistrationForm()
 
-    return render(request, 'garage/login_register.html', {'form': form})
+    context = {'form': form}
+    return render(request, 'garage/login_register.html', context)
 
 @login_required(login_url="login/")
 def home(request):
@@ -129,6 +143,9 @@ def repairstatus(request, pk):
 
 def clientLogin(request):
     return render(request, 'garage/client_login.html')
+
+def mechanicLogin(request):
+    return render(request, 'garage/mechanic_login.html')
 
 def index(request):
     return render(request, 'garage/index.html')

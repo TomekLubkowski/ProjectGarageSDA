@@ -14,6 +14,7 @@ urlpatterns = [
     path('car/<str:pk>/', views.car, name='car'),
     path('repair-status/<str:pk>/', views.repairstatus, name='repairstatus'),
     path('client-login/', views.clientLogin, name='clientlogin'),
+    path('mechanic-login/', views.mechanicLogin, name='mechanic-login'),
     path('', views.index, name='index'),
 
 ]

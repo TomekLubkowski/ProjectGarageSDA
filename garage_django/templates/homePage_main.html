@@ -10,8 +10,8 @@
   <meta name="author" content="SitePoint">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@300&family=Inter:wght@300&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@300&family=Inter:wght@300&display=swap" rel="stylesheet">
   <link rel='stylesheet' type="text/css" href="{% static 'css/main.css' %}" media="screen" rel="stylesheet">
 
 
@@ -24,7 +24,7 @@
     {% if messages %}
     <ul class="messages">
         {% for message in messages %}
-        <li></li>{{ message }}</li>
+        <li>{{message}}</li>
         {% endfor %}
     </ul>
     {% endif %}

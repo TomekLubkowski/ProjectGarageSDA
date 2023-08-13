@@ -7,6 +7,10 @@
 <div>
     <form method="POST" action="">
         {% csrf_token %}
+        {{ form.username.label_tag }} {{ form.username }}
+        {{ form.password.label_tag }} {{ form.password }}
+        {{ form.user_type.label_tag }} {{ form.user_type }}
+        <button type="submit">Login</button>
 
         <label>Username:</label>
         <input type="text" name="username" placeholder="Enter Username" />
@@ -18,7 +22,7 @@
     </form>
     
     <p>Haven't signed up yet?</p>
-    <a href="{% url 'register' %}">Sign up</a>
+    <a href="{% url 'Login' %}">Login</a>
    
 </div>
 
@@ -28,11 +32,12 @@
     <form method="POST" action="">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="submit" value="Register" />
+        <input type="submit" value="Login" />
     </form>
     
     <p>Already signed up?</p>
-    <a href="{% url 'login' %}">Login</a>
+    <a href="{% url 'register' %}">Register</a>
+    
 
 </div>
 
