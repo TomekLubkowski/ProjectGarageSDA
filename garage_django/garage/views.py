@@ -10,8 +10,6 @@ from .forms import RepairForm, carForm
 # import requests
 
 def loginPage(request):
-    page = 'login'
-    
     if request.method == 'POST':
         username = request.POST.get('username').lower()
         password = request.POST.get('password')
